@@ -1,0 +1,292 @@
+[
+  {
+    "_id": {
+      "$oid": "68a70fabc2f953292a3f8fba"
+    },
+    "user": {
+      "$oid": "68a70fabc2f953292a3f8fb8"
+    },
+    "personalInfo": {
+      "address": {
+        "country": "Polska"
+      },
+      "contact": {
+        "email": "wojcik.filip@example.com"
+      },
+      "firstName": "Filip",
+      "lastName": "Wójcik",
+      "gender": "M",
+      "dateOfBirth": {
+        "$date": "2000-02-10T00:00:00.000Z"
+      }
+    },
+    "professionalInfo": {
+      "position": "physiotherapist",
+      "specializations": [],
+      "licenses": [],
+      "education": [],
+      "certifications": []
+    },
+    "employmentInfo": {
+      "managedServices": [],
+      "employmentDate": {
+        "$date": "2025-08-01T00:00:00.000Z"
+      }
+    },
+    "isActive": true,
+    "documents": [],
+    "schedule": [
+      {
+        "dayOfWeek": 1,
+        "startHour": 7,
+        "endHour": 15,
+        "_id": {
+          "$oid": "68a70fabc2f953292a3f8fbb"
+        }
+      },
+      {
+        "dayOfWeek": 2,
+        "startHour": 7,
+        "endHour": 15,
+        "_id": {
+          "$oid": "68a70fabc2f953292a3f8fbc"
+        }
+      },
+      {
+        "dayOfWeek": 3,
+        "startHour": 7,
+        "endHour": 15,
+        "_id": {
+          "$oid": "68a70fabc2f953292a3f8fbd"
+        }
+      },
+      {
+        "dayOfWeek": 4,
+        "startHour": 7,
+        "endHour": 15,
+        "_id": {
+          "$oid": "68a70fabc2f953292a3f8fbe"
+        }
+      },
+      {
+        "dayOfWeek": 5,
+        "startHour": 7,
+        "endHour": 15,
+        "_id": {
+          "$oid": "68a70fabc2f953292a3f8fbf"
+        }
+      },
+      {
+        "dayOfWeek": 6,
+        "startHour": 0,
+        "endHour": 0,
+        "_id": {
+          "$oid": "68a70fabc2f953292a3f8fc0"
+        }
+      },
+      {
+        "dayOfWeek": 0,
+        "startHour": 0,
+        "endHour": 0,
+        "_id": {
+          "$oid": "68a70fabc2f953292a3f8fc1"
+        }
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-21T12:23:07.449Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-21T13:03:03.576Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "68af0d59b1b54b8ef90961f9"
+    },
+    "user": {
+      "$oid": "68af0d59b1b54b8ef90961f7"
+    },
+    "personalInfo": {
+      "address": {
+        "country": "Polska",
+        "city": "Warszawa",
+        "street": "Zdrowa 12",
+        "postalCode": "00-123"
+      },
+      "contact": {
+        "email": "anna.kowalska@example.com"
+      },
+      "firstName": "Anna",
+      "lastName": "Kowalska",
+      "gender": "F"
+    },
+    "professionalInfo": {
+      "position": "physiotherapist",
+      "specializations": [],
+      "licenses": [],
+      "education": [],
+      "certifications": []
+    },
+    "isActive": true,
+    "documents": [],
+    "schedule": [
+      {
+        "dayOfWeek": 1,
+        "startHour": 8,
+        "endHour": 16,
+        "_id": {
+          "$oid": "68af0d59b1b54b8ef90961fa"
+        }
+      },
+      {
+        "dayOfWeek": 2,
+        "startHour": 8,
+        "endHour": 16,
+        "_id": {
+          "$oid": "68af0d59b1b54b8ef90961fb"
+        }
+      },
+      {
+        "dayOfWeek": 3,
+        "startHour": 8,
+        "endHour": 16,
+        "_id": {
+          "$oid": "68af0d59b1b54b8ef90961fc"
+        }
+      },
+      {
+        "dayOfWeek": 4,
+        "startHour": 8,
+        "endHour": 16,
+        "_id": {
+          "$oid": "68af0d59b1b54b8ef90961fd"
+        }
+      },
+      {
+        "dayOfWeek": 5,
+        "startHour": 8,
+        "endHour": 16,
+        "_id": {
+          "$oid": "68af0d59b1b54b8ef90961fe"
+        }
+      },
+      {
+        "dayOfWeek": 6,
+        "startHour": 0,
+        "endHour": 0,
+        "_id": {
+          "$oid": "68af0d59b1b54b8ef90961ff"
+        }
+      },
+      {
+        "dayOfWeek": 0,
+        "startHour": 0,
+        "endHour": 0,
+        "_id": {
+          "$oid": "68af0d59b1b54b8ef9096200"
+        }
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-27T13:51:21.601Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-27T13:52:32.460Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "68af0dd4b1b54b8ef9096258"
+    },
+    "user": {
+      "$oid": "68af0dd4b1b54b8ef9096256"
+    },
+    "personalInfo": {
+      "firstName": "Tomasz",
+      "lastName": "Zieliński",
+      "contact": {
+        "email": "t.zielinski@example.com"
+      },
+      "address": {
+        "country": "Polska"
+      }
+    },
+    "professionalInfo": {
+      "position": "physiotherapist",
+      "specializations": [],
+      "licenses": [],
+      "education": [],
+      "certifications": []
+    },
+    "isActive": true,
+    "documents": [],
+    "schedule": [
+      {
+        "_id": {
+          "$oid": "68af0dd4b1b54b8ef9096259"
+        },
+        "dayOfWeek": 1,
+        "startHour": 8,
+        "endHour": 16
+      },
+      {
+        "_id": {
+          "$oid": "68af0dd4b1b54b8ef909625a"
+        },
+        "dayOfWeek": 2,
+        "startHour": 8,
+        "endHour": 16
+      },
+      {
+        "_id": {
+          "$oid": "68af0dd4b1b54b8ef909625b"
+        },
+        "dayOfWeek": 3,
+        "startHour": 8,
+        "endHour": 16
+      },
+      {
+        "_id": {
+          "$oid": "68af0dd4b1b54b8ef909625c"
+        },
+        "dayOfWeek": 4,
+        "startHour": 8,
+        "endHour": 16
+      },
+      {
+        "_id": {
+          "$oid": "68af0dd4b1b54b8ef909625d"
+        },
+        "dayOfWeek": 5,
+        "startHour": 8,
+        "endHour": 16
+      },
+      {
+        "_id": {
+          "$oid": "68af0dd4b1b54b8ef909625e"
+        },
+        "dayOfWeek": 6,
+        "startHour": 0,
+        "endHour": 0
+      },
+      {
+        "_id": {
+          "$oid": "68af0dd4b1b54b8ef909625f"
+        },
+        "dayOfWeek": 0,
+        "startHour": 0,
+        "endHour": 0
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-27T13:53:24.769Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-27T13:53:24.769Z"
+    },
+    "__v": 0
+  }
+]

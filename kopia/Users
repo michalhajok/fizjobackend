@@ -1,0 +1,195 @@
+[
+  {
+    "_id": {
+      "$oid": "68a70fabc2f953292a3f8fb8"
+    },
+    "firstName": "Filip",
+    "lastName": "Wójcik",
+    "email": "wojcik.filip@example.com",
+    "password": "$2a$12$6ZhJS2H.Aqtq72KxGNjituaKy58flC8SpDs6U.8GRfOz4A169qi7C",
+    "role": "physiotherapist",
+    "permissions": [],
+    "isActive": true,
+    "isVerified": false,
+    "loginAttempts": 0,
+    "settings": {
+      "notifications": {
+        "email": true,
+        "push": true,
+        "sms": false
+      },
+      "language": "pl"
+    },
+    "refreshTokens": [],
+    "createdAt": {
+      "$date": "2025-08-21T12:23:07.086Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-21T12:23:07.086Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "68ada5d1283fa54c7198977f"
+    },
+    "firstName": "Admin",
+    "lastName": "User",
+    "email": "admin@admin.pl",
+    "password": "$2a$12$5ZLVLJBqe5guopVHHXvZ4ec5y0MCHF27KD2tc7fxM.dh5lkypNJPi",
+    "role": "admin",
+    "permissions": [
+      "admin:all",
+      "patients:read",
+      "patients:write",
+      "patients:delete",
+      "employees:read",
+      "employees:write",
+      "employees:delete",
+      "visits:read",
+      "visits:write",
+      "visits:delete",
+      "reports:read",
+      "reports:write",
+      "settings:read",
+      "settings:write"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "loginAttempts": 0,
+    "settings": {
+      "notifications": {
+        "email": true,
+        "push": true,
+        "sms": false
+      },
+      "language": "pl"
+    },
+    "refreshTokens": [
+      {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYTVkMTI4M2ZhNTRjNzE5ODk3N2YiLCJpYXQiOjE3NTYyMTA2NDksImV4cCI6MTc1NjgxNTQ0OX0.BKkG1lzOl11EEGJm4g_EH22l3dUdLQiaMxnwrpd91M0",
+        "_id": {
+          "$oid": "68ada5d9b3624d6ac70ba896"
+        },
+        "createdAt": {
+          "$date": "2025-08-26T12:17:29.600Z"
+        }
+      },
+      {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYTVkMTI4M2ZhNTRjNzE5ODk3N2YiLCJpYXQiOjE3NTYyMTQ4OTcsImV4cCI6MTc1NjgxOTY5N30.FSgDxEv3cIL0LxpdTtNdEl7q6EpTqa2QtkZq4QJl4sQ",
+        "_id": {
+          "$oid": "68adb671b3624d6ac70ba8d5"
+        },
+        "createdAt": {
+          "$date": "2025-08-26T13:28:17.265Z"
+        }
+      },
+      {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYTVkMTI4M2ZhNTRjNzE5ODk3N2YiLCJpYXQiOjE3NTYyOTAyMDcsImV4cCI6MTc1Njg5NTAwN30.JFt0TBfT1-9x2FjwqJeu489czEjje5vWJWkMcRci5DM",
+        "_id": {
+          "$oid": "68aedc9f1b33bcf34e4e9175"
+        },
+        "createdAt": {
+          "$date": "2025-08-27T10:23:27.465Z"
+        }
+      },
+      {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYTVkMTI4M2ZhNTRjNzE5ODk3N2YiLCJpYXQiOjE3NTYyOTA1MzcsImV4cCI6MTc1Njg5NTMzN30.HZ2wqX4_579pdMIadYr3ywxtQN5fVsz2HP1c8w-Iffk",
+        "_id": {
+          "$oid": "68aedde9b1b54b8ef909619e"
+        },
+        "createdAt": {
+          "$date": "2025-08-27T10:28:57.789Z"
+        }
+      },
+      {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYTVkMTI4M2ZhNTRjNzE5ODk3N2YiLCJpYXQiOjE3NTYyOTA2MDMsImV4cCI6MTc1Njg5NTQwM30.neVpu30kscRxQQ9R--yI4lPvWjUcd12aHo05_LyciqU",
+        "_id": {
+          "$oid": "68aede2bb1b54b8ef90961b8"
+        },
+        "createdAt": {
+          "$date": "2025-08-27T10:30:03.930Z"
+        }
+      },
+      {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYTVkMTI4M2ZhNTRjNzE5ODk3N2YiLCJpYXQiOjE3NTYzMDI1MTYsImV4cCI6MTc1NjkwNzMxNn0.RXwgr6anbzL9ykgbiqTUnJBr3ltCwhSET3aVFUC0ROw",
+        "_id": {
+          "$oid": "68af0cb4b1b54b8ef90961d9"
+        },
+        "createdAt": {
+          "$date": "2025-08-27T13:48:36.643Z"
+        }
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-26T12:17:21.953Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-27T13:48:36.644Z"
+    },
+    "__v": 6,
+    "lastLogin": {
+      "$date": "2025-08-27T13:48:36.643Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "68af0d59b1b54b8ef90961f7"
+    },
+    "firstName": "Anna",
+    "lastName": "Kowalska",
+    "email": "anna.kowalska@example.com",
+    "password": "$2a$12$0Njw2klsJe5Sgjs1QwI3B.gCK6kB/ForFJGiMYQQnH2FBIfe9I8bq",
+    "role": "physiotherapist",
+    "permissions": [],
+    "isActive": true,
+    "isVerified": false,
+    "loginAttempts": 0,
+    "settings": {
+      "notifications": {
+        "email": true,
+        "push": true,
+        "sms": false
+      },
+      "language": "pl"
+    },
+    "refreshTokens": [],
+    "createdAt": {
+      "$date": "2025-08-27T13:51:21.234Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-27T13:51:21.234Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "68af0dd4b1b54b8ef9096256"
+    },
+    "firstName": "Tomasz",
+    "lastName": "Zieliński",
+    "email": "t.zielinski@example.com",
+    "password": "$2a$12$TB6bDhvCgXBKib7K.tNfEusI9msGV/ZGOYDStPcBPtT1ozAJpFWD.",
+    "role": "physiotherapist",
+    "permissions": [],
+    "isActive": true,
+    "isVerified": false,
+    "loginAttempts": 0,
+    "settings": {
+      "notifications": {
+        "email": true,
+        "push": true,
+        "sms": false
+      },
+      "language": "pl"
+    },
+    "refreshTokens": [],
+    "createdAt": {
+      "$date": "2025-08-27T13:53:24.369Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-27T13:53:24.369Z"
+    },
+    "__v": 0
+  }
+]

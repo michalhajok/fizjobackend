@@ -12,7 +12,7 @@ exports.getIcd9Procedures = async (req, res) => {
         }
       : {};
     const results = await Icd9Procedure.find(filter)
-      .limit(50)
+      // .limit(50)
       .sort({ code: 1 });
     res.json({ success: true, data: results });
   } catch (err) {

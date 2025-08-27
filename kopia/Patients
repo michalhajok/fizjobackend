@@ -1,0 +1,665 @@
+[
+  {
+    "_id": {
+      "$oid": "686c10128cf6dfa8a03a37ad"
+    },
+    "personalInfo": {
+      "firstName": "Alicja",
+      "lastName": "Lewandowska",
+      "pesel": "88071015088",
+      "dateOfBirth": {
+        "$date": "1988-07-10T00:00:00.000Z"
+      },
+      "gender": "F",
+      "contact": {
+        "phone": "685422537",
+        "email": "alicja.lewandowska88@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:21:06.458Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:21:06.460Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:21:06.461Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:21:06.461Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c103e8cf6dfa8a03a37ba"
+    },
+    "personalInfo": {
+      "firstName": "Tomasz",
+      "lastName": "Kriwczyk",
+      "pesel": "80112768436",
+      "dateOfBirth": {
+        "$date": "1980-11-27T00:00:00.000Z"
+      },
+      "gender": "M",
+      "contact": {
+        "phone": "555123219",
+        "email": "tomasz.kriwczyk80@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:21:50.553Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:21:50.555Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:21:50.557Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:21:50.557Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c10718cf6dfa8a03a37c7"
+    },
+    "personalInfo": {
+      "firstName": "Mateusz",
+      "lastName": "Zieliński",
+      "pesel": "87022671432",
+      "dateOfBirth": {
+        "$date": "1987-02-26T00:00:00.000Z"
+      },
+      "gender": "M",
+      "contact": {
+        "phone": "551748575",
+        "email": "mateusz.zielinski87@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:22:41.153Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:22:41.154Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:22:41.157Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:22:41.157Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c109b8cf6dfa8a03a37d4"
+    },
+    "personalInfo": {
+      "firstName": "Anna",
+      "lastName": "Dąbrowska",
+      "pesel": "80112875860",
+      "dateOfBirth": {
+        "$date": "1980-11-28T00:00:00.000Z"
+      },
+      "gender": "F",
+      "contact": {
+        "phone": "703519196",
+        "email": "anna.dabrowska80@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:23:23.831Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:23:23.831Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:23:23.833Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:23:23.833Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c10c98cf6dfa8a03a37e1"
+    },
+    "personalInfo": {
+      "firstName": "Julia",
+      "lastName": "Zielińska",
+      "pesel": "03250778482",
+      "dateOfBirth": {
+        "$date": "2003-05-07T00:00:00.000Z"
+      },
+      "gender": "F",
+      "contact": {
+        "phone": "513344602",
+        "email": "julia.zielinska03@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:24:09.398Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:24:09.400Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:24:09.401Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:24:09.401Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c10f38cf6dfa8a03a37ee"
+    },
+    "personalInfo": {
+      "firstName": "Martyna",
+      "lastName": "Wójcik",
+      "pesel": "88112885982",
+      "dateOfBirth": {
+        "$date": "1988-11-28T00:00:00.000Z"
+      },
+      "gender": "F",
+      "contact": {
+        "phone": "731621339",
+        "email": "martyna.wojcik88@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:24:51.242Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:24:51.243Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:24:51.243Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:24:51.243Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c11298cf6dfa8a03a37fb"
+    },
+    "personalInfo": {
+      "firstName": "Paweł",
+      "lastName": "Nowik",
+      "pesel": "70100186935",
+      "dateOfBirth": {
+        "$date": "1970-10-01T00:00:00.000Z"
+      },
+      "gender": "M",
+      "contact": {
+        "phone": "711497282",
+        "email": "pawel.nowik70@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:25:45.862Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:25:45.863Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:25:45.864Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:25:45.864Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c115e8cf6dfa8a03a3808"
+    },
+    "personalInfo": {
+      "firstName": "Paweł",
+      "lastName": "Kowilski",
+      "pesel": "84021987173",
+      "dateOfBirth": {
+        "$date": "1984-02-19T00:00:00.000Z"
+      },
+      "gender": "M",
+      "contact": {
+        "phone": "626470212",
+        "email": "pawel.kowilski84@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:26:38.017Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:26:38.017Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:26:38.018Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:26:38.018Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c118e8cf6dfa8a03a3815"
+    },
+    "personalInfo": {
+      "firstName": "Karolina",
+      "lastName": "Kowalska",
+      "pesel": "82080902207",
+      "dateOfBirth": {
+        "$date": "1982-08-09T00:00:00.000Z"
+      },
+      "gender": "F",
+      "contact": {
+        "phone": "763913814",
+        "email": "karolina.kowalska82@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:27:26.188Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:27:26.189Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:27:26.190Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:27:26.190Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c11d58cf6dfa8a03a3836"
+    },
+    "personalInfo": {
+      "firstName": "Zuzanna",
+      "lastName": "Mazur",
+      "pesel": "01270733742",
+      "dateOfBirth": {
+        "$date": "2001-07-07T00:00:00.000Z"
+      },
+      "gender": "F",
+      "contact": {
+        "phone": "507350682",
+        "email": "zuzanna.mazur01@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:28:37.218Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:28:37.219Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:28:37.220Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:28:37.220Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c121d8cf6dfa8a03a3843"
+    },
+    "personalInfo": {
+      "firstName": "Michał",
+      "lastName": "Lewindowski",
+      "pesel": "03252573191",
+      "dateOfBirth": {
+        "$date": "2003-05-25T00:00:00.000Z"
+      },
+      "gender": "M",
+      "contact": {
+        "phone": "754231771",
+        "email": "michal.lewindowski03@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:29:49.720Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:29:49.722Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:29:49.723Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:29:49.723Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c12548cf6dfa8a03a3850"
+    },
+    "personalInfo": {
+      "firstName": "Natalia",
+      "lastName": "Kamińska",
+      "pesel": "78012811466",
+      "dateOfBirth": {
+        "$date": "1978-01-28T00:00:00.000Z"
+      },
+      "gender": "F",
+      "contact": {
+        "phone": "510225722",
+        "email": "natalia.kaminska78@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:30:44.669Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:30:44.671Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:30:44.672Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:30:44.672Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "686c128f8cf6dfa8a03a385d"
+    },
+    "personalInfo": {
+      "firstName": "Emilia",
+      "lastName": "Mazur",
+      "pesel": "71042871949",
+      "dateOfBirth": {
+        "$date": "1971-04-28T00:00:00.000Z"
+      },
+      "gender": "F",
+      "contact": {
+        "phone": "513305453",
+        "email": "emilia.mazur71@example.com"
+      }
+    },
+    "medicalInfo": {
+      "allergies": [],
+      "medications": [],
+      "chronicConditions": [],
+      "medicalHistory": []
+    },
+    "physiotherapyData": {
+      "referringPhysician": "",
+      "initialDiagnosis": "",
+      "treatmentGoals": [],
+      "contraindications": [],
+      "specialNotes": ""
+    },
+    "visits": [],
+    "appointments": [],
+    "createdBy": {
+      "$oid": "686abc121d4ed0f6259b8b95"
+    },
+    "isActive": true,
+    "consentGiven": true,
+    "consentDate": {
+      "$date": "2025-07-07T18:31:43.310Z"
+    },
+    "dataRetentionUntil": {
+      "$date": "2045-07-07T18:31:43.310Z"
+    },
+    "createdAt": {
+      "$date": "2025-07-07T18:31:43.311Z"
+    },
+    "updatedAt": {
+      "$date": "2025-07-07T18:31:43.311Z"
+    },
+    "__v": 0
+  }
+]
