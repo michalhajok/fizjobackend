@@ -56,5 +56,8 @@
     "express"
   ],
   "author": "Physiotherapy Clinic System",
-  "license": "ISC"
+  "license": "ISC",
+  "engines": {
+    "node": "22.x"
+  }
 }
