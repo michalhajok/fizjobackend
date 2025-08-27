@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Raport z Wizyty</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #28a745;
+    }
+    .clinic-info {
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .section {
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #28a745;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+    .info-block {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .info-item {
+      width: 50%;
+      margin-bottom: 10px;
+    }
+    .label {
+      font-weight: bold;
+      color: #666;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th {
+      background-color: #f2f2f2;
+      text-align: left;
+      padding: 8px;
+    }
+    td {
+      padding: 8px;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 12px;
+      text-align: center;
+      color: #666;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+    }
+    .signature-block {
+      margin-top: 50px;
+      text-align: center;
+    }
+    .signature-line {
+      display: inline-block;
+      width: 200px;
+      border-top: 1px solid #000;
+      margin: 0 20px;
+      text-align: center;
+      padding-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>RAPORT Z WIZYTY</h1>
+      <div class="clinic-info">
+        <div>Placówka Fizjoterapeutyczna</div>
+        <div>ul. Zdrowa 123, 00-000 Warszawa</div>
+        <div>Tel: 123-456-789, Email: kontakt@placowka-fizjo.pl</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Informacje Podstawowe</div>
+      <div class="info-block">
+        <div class="info-item">
+          <div class="label">Pacjent:</div>
+          <div>{{visit.patient.personalInfo.firstName}} {{visit.patient.personalInfo.lastName}}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Fizjoterapeuta:</div>
+          <div>{{visit.employee.personalInfo.firstName}} {{visit.employee.personalInfo.lastName}}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Data wizyty:</div>
+          <div>{{visit.visitDate}}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Czas trwania:</div>
+          <div>{{visit.duration}} minut</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Status:</div>
+          <div>{{visit.status}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Wykonane Usługi</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Nazwa usługi</th>
+            <th>Czas trwania</th>
+            <th>Uwagi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each visit.services}}
+            <tr>
+              <td>{{service.name}}</td>
+              <td>{{duration}} min</td>
+              <td>{{notes}}</td>
+            </tr>
+          {{/each}}
+          {{^visit.services}}
+            <tr>
+              <td colspan="3" style="text-align: center;">Brak zarejestrowanych usług</td>
+            </tr>
+          {{/visit.services}}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Parametry Życiowe</div>
+      <div class="info-block">
+        <div class="info-item">
+          <div class="label">Ciśnienie krwi:</div>
+          <div>{{visit.vitalSigns.bloodPressure.systolic}}/{{visit.vitalSigns.bloodPressure.diastolic}} mmHg</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Tętno:</div>
+          <div>{{visit.vitalSigns.heartRate}} uderzeń/min</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Temperatura:</div>
+          <div>{{visit.vitalSigns.temperature}}°C</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Saturacja:</div>
+          <div>{{visit.vitalSigns.oxygenSaturation}}%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Notatki z Terapii (SOAP)</div>
+      <div>
+        <div class="label">Subiektywna ocena (S):</div>
+        <div>{{visit.treatmentNotes.subjective}}</div>
+      </div>
+      <div style="margin-top: 10px;">
+        <div class="label">Obiektywna ocena (O):</div>
+        <div>{{visit.treatmentNotes.objective}}</div>
+      </div>
+      <div style="margin-top: 10px;">
+        <div class="label">Analiza/Ocena (A):</div>
+        <div>{{visit.treatmentNotes.assessment}}</div>
+      </div>
+      <div style="margin-top: 10px;">
+        <div class="label">Plan (P):</div>
+        <div>{{visit.treatmentNotes.plan}}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Wykonane Ćwiczenia</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Ćwiczenie</th>
+            <th>Serie</th>
+            <th>Powtórzenia</th>
+            <th>Opór/Obciążenie</th>
+            <th>Uwagi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each visit.exercisesPerformed}}
+            <tr>
+              <td>{{name}}</td>
+              <td>{{sets}}</td>
+              <td>{{repetitions}}</td>
+              <td>{{resistance}}</td>
+              <td>{{notes}}</td>
+            </tr>
+          {{/each}}
+          {{^visit.exercisesPerformed}}
+            <tr>
+              <td colspan="5" style="text-align: center;">Brak zarejestrowanych ćwiczeń</td>
+            </tr>
+          {{/visit.exercisesPerformed}}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Ćwiczenia Zalecone do Wykonywania w Domu</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Ćwiczenie</th>
+            <th>Częstotliwość</th>
+            <th>Czas trwania</th>
+            <th>Instrukcje</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each visit.homeExercises}}
+            <tr>
+              <td>{{name}}</td>
+              <td>{{frequency}}</td>
+              <td>{{duration}}</td>
+              <td>{{instructions}}</td>
+            </tr>
+          {{/each}}
+          {{^visit.homeExercises}}
+            <tr>
+              <td colspan="4" style="text-align: center;">Brak zaleconych ćwiczeń domowych</td>
+            </tr>
+          {{/visit.homeExercises}}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Ocena Postępów</div>
+      <div class="info-block">
+        <div class="info-item">
+          <div class="label">Poziom bólu (0-10):</div>
+          <div>{{visit.progressAssessment.painLevel}}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Poprawa funkcjonalna:</div>
+          <div>{{visit.progressAssessment.functionalImprovement}}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Poziom współpracy:</div>
+          <div>{{visit.progressAssessment.complianceLevel}}</div>
+        </div>
+      </div>
+      <div style="margin-top: 10px;">
+        <div class="label">Dodatkowe uwagi:</div>
+        <div>{{visit.progressAssessment.notes}}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Zalecenia i Dalsza Terapia</div>
+      <div class="info-block">
+        <div class="info-item">
+          <div class="label">Zalecana kolejna wizyta:</div>
+          <div>{{#if visit.followUp.nextVisitRecommended}}Tak, {{visit.followUp.nextVisitDate}}{{else}}Nie{{/if}}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Planowane zakończenie terapii:</div>
+          <div>{{#if visit.followUp.dischargePlanned}}Tak, {{visit.followUp.dischargeDate}}{{else}}Nie{{/if}}</div>
+        </div>
+      </div>
+      <div style="margin-top: 10px;">
+        <div class="label">Zalecenia:</div>
+        <ul>
+          {{#each visit.followUp.recommendations}}
+            <li>{{this}}</li>
+          {{/each}}
+          {{^visit.followUp.recommendations}}
+            <li>Brak dodatkowych zaleceń</li>
+          {{/visit.followUp.recommendations}}
+        </ul>
+      </div>
+    </div>
+
+    <div class="signature-block">
+      <div class="signature-line">
+        <div>Fizjoterapeuta</div>
+      </div>
+      <div class="signature-line">
+        <div>Pacjent</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Wygenerowano dnia: {{generatedDate}}</p>
+      <p>Dokument wygenerowany z systemu placówki fizjoterapeutycznej.</p>
+    </div>
+  </div>
+</body>
+</html>

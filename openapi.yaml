@@ -1,0 +1,826 @@
+openapi: 3.0.0
+info:
+  title: API Fizjoterapeutycznej Aplikacji
+  version: 1.0.0
+  description: Dokumentacja podstawowych endpointów z poprawionymi schematami na podstawie Mongoose models
+servers:
+  - url: http://localhost:8080
+    description: Serwer lokalny
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/Employee'
+
+    Patient:
+      type: object
+      properties:
+        _id:
+          type: string
+        personalInfo:
+          type: object
+          properties:
+            firstName:
+              type: string
+            lastName:
+              type: string
+            pesel:
+              type: string
+            dateOfBirth:
+              type: string
+              format: date
+            gender:
+              type: string
+              enum: [M, F, Other]
+            contact:
+              type: object
+              properties:
+                phone:
+                  type: string
+                email:
+                  type: string
+                  format: email
+        medicalInfo:
+          type: object
+          properties:
+            allergies:
+              type: array
+              items: { type: string }
+            chronicConditions:
+              type: array
+              items: { type: string }
+            medications:
+              type: array
+              items:
+                type: object
+                properties:
+                  name: { type: string }
+                  dosage: { type: string }
+                  frequency: { type: string }
+            medicalHistory:
+              type: array
+              items: { type: string }
+        physiotherapyData:
+          type: object
+          properties:
+            referringPhysician: { type: string }
+            initialDiagnosis: { type: string }
+            treatmentGoals:
+              type: array
+              items: { type: string }
+            contraindications:
+              type: array
+              items: { type: string }
+            specialNotes: { type: string }
+        consentGiven:
+          type: boolean
+        consentDate:
+          type: string
+          format: date-time
+
+    Employee:
+      type: object
+      properties:
+        _id:
+          type: string
+        personalInfo:
+          type: object
+          properties:
+            firstName: { type: string }
+            lastName: { type: string }
+            contact:
+              type: object
+              properties:
+                phone: { type: string }
+                email: { type: string, format: email }
+        roles:
+          type: array
+          items: { type: string }
+        permissions:
+          type: array
+          items: { type: string }
+        status:
+          type: string
+          enum: [active, inactive]
+        schedule:
+          type: array
+          items:
+            type: object
+            properties:
+              date: { type: string, format: date }
+              slots:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    startTime: { type: string }
+                    endTime: { type: string }
+
+    Appointment:
+      type: object
+      properties:
+        _id: { type: string }
+        patient:
+          $ref: '#/components/schemas/Patient'
+        employee:
+          $ref: '#/components/schemas/Employee'
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [scheduled, confirmed, completed, cancelled]
+        notes:
+          type: string
+
+    Examination:
+      type: object
+      properties:
+        _id: { type: string }
+        patient:
+          $ref: '#/components/schemas/Patient'
+        employee:
+          $ref: '#/components/schemas/Employee'
+        subjectiveAssessment:
+          type: object
+          properties:
+            chiefComplaint: { type: string }
+            painScale: { type: integer, minimum: 0, maximum: 10 }
+            historyOfPresentIllness: { type: string }
+            pastMedicalHistory: { type: string }
+            socialHistory: { type: string }
+        objectiveAssessment:
+          type: object
+          properties:
+            observation: { type: string }
+            palpation: { type: string }
+            rangeOfMotion: { type: string }
+            muscleStrength: { type: string }
+            functionalTests: { type: string }
+            specialTests: { type: string }
+            neurological: { type: string }
+        assessment:
+          type: object
+          properties:
+            primaryDiagnosis: { type: string }
+            secondaryDiagnoses:
+              type: array
+              items: { type: string }
+            prognosisAssessment: { type: string }
+        plan:
+          type: object
+          properties:
+            treatmentPlan: { type: string }
+            goals:
+              type: object
+              properties:
+                shortTerm:
+                  type: array
+                  items: { type: string }
+                longTerm:
+                  type: array
+                  items: { type: string }
+            contraindications:
+              type: array
+              items: { type: string }
+            recommendations: { type: string }
+        status:
+          type: string
+          enum: [draft, completed, reviewed]
+
+    Visit:
+      type: object
+      properties:
+        _id: { type: string }
+        patient:
+          $ref: '#/components/schemas/Patient'
+        employee:
+          $ref: '#/components/schemas/Employee'
+        appointment:
+          $ref: '#/components/schemas/Appointment'
+        date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [scheduled, in-progress, completed, cancelled]
+        notes: { type: string }
+        treatment:
+          type: object
+          additionalProperties: true
+
+    Schedule:
+      type: object
+      properties:
+        _id: { type: string }
+        employee:
+          $ref: '#/components/schemas/Employee'
+        weekly:
+          type: array
+          items:
+            type: object
+            properties:
+              day:
+                type: string
+                enum: [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
+              slots:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    startTime: { type: string }
+                    endTime: { type: string }
+
+    Notification:
+      type: object
+      properties:
+        _id: { type: string }
+        user:
+          type: string
+        type: { type: string }
+        message: { type: string }
+        read: { type: boolean }
+        metadata:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Logowanie użytkownika
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: Pomyślne logowanie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Nieprawidłowe dane logowania
+
+  /api/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Wylogowanie użytkownika
+      responses:
+        '200':
+          description: Pomyślne wylogowanie
+
+  /api/patients:
+    get:
+      tags: [Patients]
+      summary: Lista wszystkich pacjentów
+      responses:
+        '200':
+          description: Lista pacjentów
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Patient'
+    post:
+      tags: [Patients]
+      summary: Dodanie nowego pacjenta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Patient'
+      responses:
+        '201':
+          description: Pacjent utworzony
+
+  /api/patients/{id}:
+    get:
+      tags: [Patients]
+      summary: Szczegóły pacjenta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Dane pacjenta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+
+  /api/appointments:
+    get:
+      tags: [Appointments]
+      summary: Lista wszystkich terminów
+      responses:
+        '200':
+          description: Lista terminów
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Appointment'
+    post:
+      tags: [Appointments]
+      summary: Utworzenie nowego terminu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Appointment'
+      responses:
+        '201':
+          description: Termin utworzony
+
+  /api/appointments/{id}:
+    get:
+      tags: [Appointments]
+      summary: Szczegóły terminu
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Dane terminu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+    put:
+      tags: [Appointments]
+      summary: Aktualizacja terminu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Appointment'
+      responses:
+        '200':
+          description: Termin zaktualizowany
+    delete:
+      tags: [Appointments]
+      summary: Usunięcie terminu
+      parameters:
+        - $ref: '#/paths/~1api~1appointments~1{id}/get/parameters/0'
+      responses:
+        '204':
+          description: Termin usunięty
+
+  /api/employees:
+    get:
+      tags: [Employees]
+      summary: Lista wszystkich pracowników
+      responses:
+        '200':
+          description: Lista pracowników
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+    post:
+      tags: [Employees]
+      summary: Dodanie nowego pracownika
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      responses:
+        '201':
+          description: Pracownik utworzony
+
+  /api/employees/{id}:
+    get:
+      tags: [Employees]
+      summary: Szczegóły pracownika
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Dane pracownika
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+    put:
+      tags: [Employees]
+      summary: Aktualizacja pracownika
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      responses:
+        '200':
+          description: Pracownik zaktualizowany
+    delete:
+      tags: [Employees]
+      summary: Usunięcie pracownika
+      parameters:
+        - $ref: '#/paths/~1api~1employees~1{id}/get/parameters/0'
+      responses:
+        '204':
+          description: Pracownik usunięty
+
+  /api/examinations:
+    post:
+      tags: [Examinations]
+      summary: Utworzenie nowego badania
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Examination'
+      responses:
+        '201':
+          description: Badanie utworzone
+
+  /api/examinations/{id}:
+    get:
+      tags: [Examinations]
+      summary: Pobieranie pojedynczego badania
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Dane badania
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Examination'
+    put:
+      tags: [Examinations]
+      summary: Aktualizacja badania
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Examination'
+      responses:
+        '200':
+          description: Badanie zaktualizowane
+    patch:
+      tags: [Examinations]
+      summary: Zakończenie badania
+      operationId: completeExamination
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Badanie zakończone
+    patch:
+      tags: [Examinations]
+      summary: Weryfikacja badania przez specjalistę
+      operationId: reviewExamination
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Badanie zweryfikowane
+
+  /api/visits:
+    post:
+      tags: [Visits]
+      summary: Utworzenie nowej wizyty
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Visit'
+      responses:
+        '201':
+          description: Wizyta utworzona
+
+  /api/visits/{id}:
+    get:
+      tags: [Visits]
+      summary: Pobieranie pojedynczej wizyty
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Dane wizyty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Visit'
+    put:
+      tags: [Visits]
+      summary: Aktualizacja wizyty
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Visit'
+      responses:
+        '200':
+          description: Wizyta zaktualizowana
+    patch:
+      tags: [Visits]
+      summary: Zakończenie wizyty
+      operationId: completeVisit
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Wizyta zakończona
+    patch:
+      tags: [Visits]
+      summary: Anulowanie wizyty
+      operationId: cancelVisit
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Wizyta anulowana
+
+  /api/schedules:
+    get:
+      tags: [Schedules]
+      summary: Lista harmonogramów pracowników
+      responses:
+        '200':
+          description: Lista harmonogramów
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schedule'
+    post:
+      tags: [Schedules]
+      summary: Dodanie nowego harmonogramu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
+      responses:
+        '201':
+          description: Harmonogram utworzony
+
+  /api/schedules/{id}:
+    get:
+      tags: [Schedules]
+      summary: Szczegóły harmonogramu
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Dane harmonogramu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+    put:
+      tags: [Schedules]
+      summary: Edycja harmonogramu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
+      responses:
+        '200':
+          description: Harmonogram zaktualizowany
+    delete:
+      tags: [Schedules]
+      summary: Usunięcie harmonogramu
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: Harmonogram usunięty
+
+  /api/notifications:
+    get:
+      tags: [Notifications]
+      summary: Lista powiadomień
+      responses:
+        '200':
+          description: Lista powiadomień
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+    get:
+      tags: [Notifications]
+      summary: Szczegóły powiadomienia
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Dane powiadomienia
+    post:
+      tags: [Notifications]
+      summary: Dodanie nowego powiadomienia
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+      responses:
+        '201':
+          description: Powiadomienie utworzone
+    put:
+      tags: [Notifications]
+      summary: Edycja powiadomienia
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+      responses:
+        '200':
+          description: Powiadomienie zaktualizowane
+    delete:
+      tags: [Notifications]
+      summary: Usunięcie powiadomienia
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: Powiadomienie usunięte
+
+  /api/reports/patients:
+    get:
+      tags: [Reports]
+      summary: Raport pacjentów
+      responses:
+        '200':
+          description: Raport pacjentów
+
+  /api/reports/visits:
+    get:
+      tags: [Reports]
+      summary: Raport wizyt
+      responses:
+        '200':
+          description: Raport wizyt
+
+  /api/reports/services:
+    get:
+      tags: [Reports]
+      summary: Raport usług
+      responses:
+        '200':
+          description: Raport usług
+
+  /api/admin/users:
+    get:
+      tags: [Admin]
+      summary: Lista użytkowników
+      responses:
+        '200':
+          description: Lista użytkowników
+    post:
+      tags: [Admin]
+      summary: Dodanie nowego użytkownika
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      responses:
+        '201':
+          description: Użytkownik utworzony
+
+  /api/admin/users/{id}:
+    put:
+      tags: [Admin]
+      summary: Edycja użytkownika
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Użytkownik zaktualizowany
+    delete:
+      tags: [Admin]
+      summary: Usunięcie użytkownika
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: Użytkownik usunięty
+
+  /health:
+    get:
+      tags: [Health]
+      summary: Sprawdzenie stanu aplikacji
+      security: []
+      responses:
+        '200':
+          description: Aplikacja działa poprawnie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheck'
