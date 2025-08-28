@@ -131,6 +131,28 @@ exports.getGlobalSettings = async (req, res) => {
     });
   }
 };
+// Edytuj ustawienia globalne
+exports.updateGlobalSettings = async (req, res) => {
+  try {
+    const settings = await Settings.findOneAndUpdate({}, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!settings) {
+      return res.status(404).json({
+        success: false,
+        message: "Ustawienia globalne nie zostały znalezione",
+      });
+    }
+    res.json({ success: true, data: settings });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Błąd edycji ustawień globalnych",
+      error: error.message,
+    });
+  }
+};
 
 exports.getAuditLogs = async (req, res) => {
   try {

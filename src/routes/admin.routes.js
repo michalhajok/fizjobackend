@@ -53,6 +53,13 @@ router.get(
   adminController.getGlobalSettings
 );
 
+router.put(
+  "/settings/global",
+  authenticateToken,
+  requirePermission("admin:write"),
+  adminController.updateGlobalSettings
+);
+
 router.get(
   "/audit-logs",
   authenticateToken,
