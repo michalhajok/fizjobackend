@@ -20,6 +20,7 @@ class PatientController {
         createdBy: req.user._id,
         consentDate: new Date(),
       };
+      console.log(patientData);
 
       const patient = new Patient(patientData);
       await patient.save();

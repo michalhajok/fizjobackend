@@ -78,6 +78,7 @@ const patientSchema = new mongoose.Schema(
       required: true,
     },
     isActive: { type: Boolean, default: true },
+    consentGiven: { type: Boolean, default: true },
   },
   {
     timestamps: true,
