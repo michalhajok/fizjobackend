@@ -232,23 +232,16 @@ exports.updateAppointmentStatus = async (req, res) => {
     }
 
     const oldStatus = appointment.status;
-    appointment.status = status.status;
+    appointment.status = status;
 
     // Dodaj do historii z informacją kto zmienił
     appointment.statusHistory.push({
-      ...status,
+      status,
       changedBy: req.user._id,
       changedAt: new Date(),
     });
 
     await appointment.save();
-
-    // Automatyczne powiadomienia przy zmianie statusu
-    // await NotificationService.handleStatusChange(
-    //   appointment,
-    //   oldStatus,
-    //   status
-    // );
 
     // Log audytu
     await AuditLog.create({
@@ -256,8 +249,8 @@ exports.updateAppointmentStatus = async (req, res) => {
       action: "UPDATE_APPOINTMENT_STATUS",
       resourceType: "Appointment",
       resourceId: appointment._id,
-      details: `Status changed from ${oldStatus} to ${status.status}`,
-      metadata: { oldStatus, newStatus: status.status },
+      details: `Status changed from ${oldStatus} to ${status}`,
+      metadata: { oldStatus, newStatus: status },
       ipAddress: req.ip,
       userAgent: req.get("User-Agent"),
     });
