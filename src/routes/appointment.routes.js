@@ -86,8 +86,8 @@ const {
   requirePermission,
 } = require("../middleware/auth.middleware");
 
-// const multer = require("multer");
-// const upload = multer({ dest: "uploads/" }); // Konfiguruj odpowiednio w produkcji
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" }); // Konfiguruj odpowiednio w produkcji
 
 // Wszystkie trasy poniżej wymagają autoryzacji
 router.use(authenticateToken);
@@ -120,18 +120,18 @@ router.post("/:id/sign", appointmentController.signAppointment);
 // Pobierz logi audytu (historia zmian wizyty)
 // router.get("/:id/audit-logs", appointmentController.getAuditLogs);
 
-// // Dodaj załącznik do wizyty (upload pliku)
-// router.post(
-//   "/:id/attachments",
-//   upload.single("file"),
-//   appointmentController.uploadAttachment
-// );
+// Dodaj załącznik do wizyty (upload pliku)
+router.post(
+  "/:id/attachments",
+  upload.single("file"),
+  appointmentController.uploadAttachment
+);
 
-// // Opcjonalnie - usuń załącznik
-// router.delete(
-//   "/:id/attachments/:attachmentId",
-//   appointmentController.deleteAttachment
-// );
+// Opcjonalnie - usuń załącznik
+router.delete(
+  "/:id/attachments/:attachmentId",
+  appointmentController.deleteAttachment
+);
 
 // // Dodaj badanie, rozpoznanie, skalę oceny itp.
 // router.post("/:id/add-examination", appointmentController.addExamination);

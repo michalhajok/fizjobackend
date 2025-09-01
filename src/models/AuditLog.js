@@ -18,6 +18,8 @@ const auditLogSchema = new mongoose.Schema(
         "DELETE_PATIENT",
         "VIEW_PATIENT",
         "LOGIN",
+        "UPLOAD_ATTACHMENT",
+        "DELETE_ATTACHMENT",
         "LOGOUT",
         "FAILED_LOGIN",
         "CREATE_VISIT",

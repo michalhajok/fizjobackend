@@ -466,4 +466,99 @@ exports.getAvailableSlots = async (req, res) => {
   }
 };
 
+// // Dodaj załącznik do wizyty (upload pliku)
+// router.post(
+//   "/:id/attachments",
+//   upload.single("file"),
+//   appointmentController.uploadAttachment
+// );
+
+// // Opcjonalnie - usuń załącznik
+// router.delete(
+//   "/:id/attachments/:attachmentId",
+//   appointmentController.deleteAttachment
+// );
+
+exports.uploadAttachment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No file uploaded" });
+    }
+
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Appointment not found" });
+    }
+
+    // Dodaj załącznik do wizyty
+    appointment.interview.attachments.push({
+      filename: req.file.originalname,
+      filepath: req.file.path,
+      uploadedBy: req.user._id,
+      uploadedAt: new Date(),
+    });
+
+    await appointment.save();
+
+    // Log audytu
+    await AuditLog.create({
+      userId: req.user._id,
+      action: "UPLOAD_ATTACHMENT",
+      resourceType: "Appointment",
+      resourceId: appointment._id,
+      details: `Uploaded attachment ${req.file.originalname}`,
+      ipAddress: req.ip,
+      userAgent: req.get("User-Agent"),
+    });
+
+    res.json({ success: true, data: appointment });
+  } catch (err) {
+    console.log("Error in uploadAttachment:", err);
+
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.deleteAttachment = async (req, res) => {
+  try {
+    const { id, attachmentId } = req.params;
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Appointment not found" });
+    }
+    // const attachment = appointment.interview.attachments.id(attachmentId);
+    // if (!attachment) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "Attachment not found" });
+    // }
+    // console.log("Deleting attachment:", attachment);
+
+    appointment.interview.attachments.pull(attachmentId);
+    await appointment.save();
+    // Log audytu
+    await AuditLog.create({
+      userId: req.user._id,
+      action: "DELETE_ATTACHMENT",
+      resourceType: "Appointment",
+      resourceId: appointment._id,
+      details: `Deleted attachment`,
+      ipAddress: req.ip,
+      userAgent: req.get("User-Agent"),
+    });
+    res.json({ success: true, data: appointment });
+  } catch (err) {
+    console.log("Error in deleteAttachment:", err);
+
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 module.exports = exports;

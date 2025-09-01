@@ -75,6 +75,46 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+exports.updateUserPermissions = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Nie znaleziono użytkownika" });
+    }
+    user.permissions = req.body.permissions;
+    await user.save();
+    res.json({ success: true, data: user });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Błąd edycji uprawnień użytkownika",
+      error: error.message,
+    });
+  }
+};
+
+exports.updateUserRole = (req, res) => {
+  try {
+    const user = User.findById(req.params.id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Nie znaleziono użytkownika" });
+    }
+    user.role = req.body.role;
+    user.save();
+    res.json({ success: true, data: user });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Błąd edycji roli użytkownika",
+      error: error.message,
+    });
+  }
+};
+
 // Usuń użytkownika
 exports.deleteUser = async (req, res) => {
   try {

@@ -46,6 +46,20 @@ router.get(
   adminController.getUserById
 );
 
+router.put(
+  "/users/:id/role",
+  authenticateToken,
+  requirePermission("admin:write"),
+  adminController.updateUserRole
+);
+
+router.put(
+  "/users/:id/permissions",
+  authenticateToken,
+  requirePermission("admin:write"),
+  adminController.updateUserPermissions
+);
+
 router.get(
   "/settings",
   authenticateToken,

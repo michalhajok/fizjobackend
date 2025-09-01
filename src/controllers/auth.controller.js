@@ -13,7 +13,6 @@ const {
 
 const logger = require("../utils/logger");
 const config = require("../config/app");
-const { log } = require("console");
 
 class AuthController {
   // Rejestracja nowego użytkownika
@@ -44,6 +43,7 @@ class AuthController {
       email,
       password,
       role: userRole._id,
+      permissions: [],
     });
 
     // Log operacji
@@ -79,6 +79,7 @@ class AuthController {
           lastName: user.lastName,
           email: user.email,
           role: userRole,
+          permissions: user.permissions,
         },
         tokens,
       },
@@ -363,6 +364,7 @@ class AuthController {
           lastName: user.lastName,
           email: user.email,
           role: user.role,
+          permissions: user.permissions,
         },
       });
     } catch (err) {
