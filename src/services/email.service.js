@@ -100,8 +100,8 @@ const sendEmail = async ({ to, subject, template, data, html, text }) => {
     }
 
     const mailOptions = {
-      from: `${process.env.EMAIL_FROM_NAME || "hajokmichal@gmail.com"} <${
-        process.env.EMAIL_FROM || "hajokmichal@gmail.com"
+      from: `${process.env.EMAIL_FROM_NAME || "hajokmichal@demomailtrap.co"} <${
+        process.env.EMAIL_FROM || "hajokmichal@demomailtrap.co"
       }>`,
       to: to,
       subject: subject,

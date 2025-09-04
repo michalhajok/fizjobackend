@@ -10,6 +10,7 @@ const {
   AuthenticationError,
   ValidationError,
 } = require("../utils/error-handler");
+const bcrypt = require("bcryptjs");
 
 const { sendEmail } = require("../services/email.service");
 
@@ -374,159 +375,141 @@ class AuthController {
       res.status(500).json({ error: "Server error" });
     }
   }
-}
 
-exports.validateResetToken = async (req, res) => {
-  try {
-    const { token } = req.body;
-
-    if (!token) {
-      return res.status(400).json({
-        success: false,
-        message: "Token jest wymagany",
-      });
-    }
-
-    // Znajdź użytkownika z tym tokenem
-    const user = await User.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpires: { $gt: Date.now() },
-    });
-
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Token jest nieprawidłowy lub wygasł",
-      });
-    }
-
-    // Log audytu
-    await AuditLog.create({
-      userId: user._id,
-      action: "VALIDATE_RESET_TOKEN",
-      resourceType: "User",
-      resourceId: user._id,
-      details: "Password reset token validated",
-      ipAddress: req.ip,
-      userAgent: req.get("User-Agent"),
-    });
-
-    res.json({
-      success: true,
-      message: "Token jest prawidłowy",
-      data: {
-        userId: user._id,
-        email: user.email,
-      },
-    });
-  } catch (error) {
-    console.error("Error validating reset token:", error);
-    res.status(500).json({
-      success: false,
-      message: "Błąd serwera podczas walidacji tokenu",
-    });
-  }
-};
-
-// Reset hasła z tokenem
-exports.resetPassword = async (req, res) => {
-  try {
-    const { token, password } = req.body;
-
-    // Walidacja danych wejściowych
-    if (!token || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Token i hasło są wymagane",
-      });
-    }
-
-    // Walidacja hasła
-    if (password.length < 8) {
-      return res.status(400).json({
-        success: false,
-        message: "Hasło musi mieć co najmniej 8 znaków",
-      });
-    }
-
-    // Sprawdź złożoność hasła
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
-    if (!passwordRegex.test(password)) {
-      return res.status(400).json({
-        success: false,
-        message: "Hasło musi zawierać małą literę, wielką literę i cyfrę",
-      });
-    }
-
-    // Znajdź użytkownika z tym tokenem
-    const user = await User.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpires: { $gt: Date.now() },
-    });
-
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Token jest nieprawidłowy lub wygasł",
-      });
-    }
-
-    // Hashowanie nowego hasła
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Aktualizuj hasło i wyczyść token resetowania
-    user.password = hashedPassword;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
-    user.isFirstLogin = false; // Oznacz że użytkownik już ustawił hasło
-    user.passwordChangedAt = new Date();
-
-    await user.save();
-
-    // Log audytu
-    await AuditLog.create({
-      userId: user._id,
-      action: "RESET_PASSWORD",
-      resourceType: "User",
-      resourceId: user._id,
-      details: "Password reset completed successfully",
-      ipAddress: req.ip,
-      userAgent: req.get("User-Agent"),
-    });
-
-    // Wyślij email potwierdzający (opcjonalnie)
+  async validateResetToken(req, res) {
     try {
-      await sendEmail({
-        to: user.email,
-        subject: "Hasło zostało zmienione - FizjoCare",
-        template: "password-changed",
+      const { token } = req.body;
+
+      if (!token) {
+        return res.status(400).json({
+          success: false,
+          message: "Token jest wymagany",
+        });
+      }
+
+      // Znajdź użytkownika z tym tokenem
+      const user = await User.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() },
+      });
+
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: "Token jest nieprawidłowy lub wygasł",
+        });
+      }
+
+      // Log audytu
+      await AuditLog.create({
+        userId: user._id,
+        action: "VALIDATE_RESET_TOKEN",
+        resourceType: "User",
+        resourceId: user._id,
+        details: "Password reset token validated",
+        ipAddress: req.ip,
+        userAgent: req.get("User-Agent"),
+      });
+
+      res.json({
+        success: true,
+        message: "Token jest prawidłowy",
         data: {
-          firstName: user.firstName,
-          timestamp: new Date().toLocaleString("pl-PL"),
-          loginUrl: `${process.env.FRONTEND_URL}/signin`,
+          userId: user._id,
+          email: user.email,
         },
       });
-    } catch (emailError) {
-      console.error("Error sending password confirmation email:", emailError);
-      // Nie przerywamy procesu jeśli email się nie wyśle
+    } catch (error) {
+      console.error("Error validating reset token:", error);
+      res.status(500).json({
+        success: false,
+        message: "Błąd serwera podczas walidacji tokenu",
+      });
     }
-
-    res.json({
-      success: true,
-      message: "Hasło zostało pomyślnie zmienione",
-      data: {
-        userId: user._id,
-        message: "Możesz się teraz zalogować nowym hasłem",
-      },
-    });
-  } catch (error) {
-    console.error("Error resetting password:", error);
-    res.status(500).json({
-      success: false,
-      message: "Błąd serwera podczas resetowania hasła",
-    });
   }
-};
+
+  async resetPassword(req, res) {
+    try {
+      const { token, password } = req.body;
+
+      // Walidacja danych wejściowych
+      if (!token || !password) {
+        return res.status(400).json({
+          success: false,
+          message: "Token i hasło są wymagane",
+        });
+      }
+
+      // Walidacja hasła
+      if (password.length < 8) {
+        return res.status(400).json({
+          success: false,
+          message: "Hasło musi mieć co najmniej 8 znaków",
+        });
+      }
+
+      // Sprawdź złożoność hasła
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
+      if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+          success: false,
+          message: "Hasło musi zawierać małą literę, wielką literę i cyfrę",
+        });
+      }
+
+      // Znajdź użytkownika z tym tokenem
+      const user = await User.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() },
+      });
+
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: "Token jest nieprawidłowy lub wygasł",
+        });
+      }
+
+      // Hashowanie nowego hasła
+      const saltRounds = 12;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Aktualizuj hasło i wyczyść token resetowania
+      user.password = hashedPassword;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      user.isFirstLogin = false; // Oznacz że użytkownik już ustawił hasło
+      user.passwordChangedAt = new Date();
+
+      await user.save();
+
+      // Log audytu
+      await AuditLog.create({
+        userId: user._id,
+        action: "RESET_PASSWORD",
+        resourceType: "User",
+        resourceId: user._id,
+        details: "Password reset completed successfully",
+        ipAddress: req.ip,
+        userAgent: req.get("User-Agent"),
+      });
+
+      res.json({
+        success: true,
+        message: "Hasło zostało pomyślnie zmienione",
+        data: {
+          userId: user._id,
+          message: "Możesz się teraz zalogować nowym hasłem",
+        },
+      });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      res.status(500).json({
+        success: false,
+        message: "Błąd serwera podczas resetowania hasła",
+      });
+    }
+  }
+}
 
 module.exports = new AuthController();
