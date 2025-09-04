@@ -1,364 +1,276 @@
 const nodemailer = require("nodemailer");
-const config = require("../config/app");
-const logger = require("../utils/logger");
+const fs = require("fs");
+const path = require("path");
+const { MailtrapTransport } = require("mailtrap");
 
-class EmailService {
-  constructor() {
-    this.transporter = null;
-    this.initializeTransporter();
+// Konfiguracja transportera email - POPRAWKA: createTransport zamiast createTransporter
+const createTransporter = () => {
+  if (process.env.NODE_ENV === "production") {
+    // Produkcja - użyj rzeczywistego SMTP
+    return nodemailer.createTransport(
+      MailtrapTransport({
+        token: TOKEN,
+        bulk: true,
+      })
+    );
+  } else {
+    // Development - użyj testowy transporter lub loguj do konsoli
+    console.log("🔧 Development mode - creating test email transporter");
+
+    const TOKEN = process.env.TOKEN;
+
+    // Opcja 1: Testowy transporter (nie wysyła prawdziwych emaili)
+    return nodemailer.createTransport(
+      MailtrapTransport({
+        token: TOKEN,
+        bulk: true,
+      })
+    );
+
+    // Opcja 2: Ethereal Email (jeśli chcesz testować prawdziwe wysyłanie)
+    // return nodemailer.createTransport({
+    //   host: 'smtp.ethereal.email',
+    //   port: 587,
+    //   auth: {
+    //     user: 'ethereal.user@ethereal.email',
+    //     pass: 'ethereal.pass'
+    //   }
+    // });
   }
+};
 
-  initializeTransporter() {
-    try {
-      if (
-        !process.env.EMAIL_HOST ||
-        !process.env.EMAIL_USER ||
-        !process.env.EMAIL_PASS
-      ) {
-        logger.warn(
-          "Email configuration incomplete. Email service will not be available."
-        );
-        return;
-      }
+// Funkcja do ładowania szablonów email
+const loadEmailTemplate = (templateName) => {
+  try {
+    const templatePath = path.join(
+      __dirname,
+      "../templates/emails",
+      `${templateName}.html`
+    );
 
-      this.transporter = nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT || 587,
-        secure: process.env.EMAIL_PORT === "465",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      });
-
-      // Weryfikacja połączenia
-      this.transporter.verify((error, success) => {
-        if (error) {
-          logger.error("Email service verification failed:", error);
-        } else {
-          logger.info("Email service is ready");
-        }
-      });
-    } catch (error) {
-      logger.error("Error initializing email service:", error);
+    // Sprawdź czy plik istnieje
+    if (!fs.existsSync(templatePath)) {
+      console.warn(`Email template not found: ${templatePath}`);
+      return null;
     }
-  }
 
-  async sendEmail(to, subject, text, html = null) {
-    if (!this.transporter) {
-      throw new Error("Email service not configured");
+    return fs.readFileSync(templatePath, "utf8");
+  } catch (error) {
+    console.error(`Error loading email template ${templateName}:`, error);
+    return null;
+  }
+};
+
+// Funkcja do zastępowania zmiennych w szablonie
+const replaceTemplateVariables = (template, data) => {
+  let result = template;
+
+  Object.keys(data).forEach((key) => {
+    const regex = new RegExp(`{{${key}}}`, "g");
+    result = result.replace(regex, data[key] || "");
+  });
+
+  return result;
+};
+
+// Główna funkcja wysyłania emaila
+const sendEmail = async ({ to, subject, template, data, html, text }) => {
+  try {
+    console.log(`📧 Sending email to: ${to}, subject: ${subject}`);
+
+    const transporter = createTransporter();
+
+    let emailHtml = html;
+    let emailText = text;
+
+    // Jeśli podano szablon, załaduj go i zastąp zmienne
+    if (template && data) {
+      console.log(`📄 Loading email template: ${template}`);
+      const templateContent = loadEmailTemplate(template);
+      if (templateContent) {
+        emailHtml = replaceTemplateVariables(templateContent, data);
+      } else {
+        console.warn(`Template ${template} not found, using default template`);
+      }
+    }
+
+    // Jeśli nie ma HTML, użyj domyślnego szablonu
+    if (!emailHtml) {
+      emailHtml = generateDefaultTemplate(subject, data);
     }
 
     const mailOptions = {
-      from: config.email.from,
-      to,
-      subject,
-      text,
-      html: html || text,
+      from: `${process.env.EMAIL_FROM_NAME || "hajokmichal@gmail.com"} <${
+        process.env.EMAIL_FROM || "hajokmichal@gmail.com"
+      }>`,
+      to: to,
+      subject: subject,
+      html: emailHtml,
+      text: emailText || data?.message || subject,
     };
 
-    try {
-      const result = await this.transporter.sendMail(mailOptions);
+    console.log(`📤 Mail options prepared for: ${to}`);
 
-      logger.info("Email sent successfully", {
-        to,
-        subject,
+    const result = await transporter.sendMail(mailOptions);
+
+    if (process.env.NODE_ENV !== "production") {
+      console.log("✅ Email sent (development mode):", {
+        to: to,
+        subject: subject,
+        messageId: result.messageId,
+        // W development mode z jsonTransport
+        response: result.response || "Test email logged",
+        previewUrl: result.response
+          ? null
+          : "Development mode - no preview URL",
+      });
+
+      // Jeśli używasz jsonTransport, pokaż wygenerowany email
+      if (result.message) {
+        console.log("📄 Generated email content:", result.message);
+      }
+    } else {
+      console.log("✅ Email sent (production):", {
+        to: to,
         messageId: result.messageId,
       });
-
-      return result;
-    } catch (error) {
-      logger.error("Error sending email:", {
-        to,
-        subject,
-        error: error.message,
-      });
-      throw error;
     }
+
+    return {
+      success: true,
+      messageId: result.messageId,
+      response: result.response,
+      previewUrl: process.env.NODE_ENV !== "production" ? null : null,
+    };
+  } catch (error) {
+    console.error("❌ Error sending email:", error);
+
+    // Bardziej szczegółowe logowanie błędu
+    if (error.code) {
+      console.error("Email error code:", error.code);
+    }
+    if (error.response) {
+      console.error("Email error response:", error.response);
+    }
+
+    throw error;
   }
+};
 
-  async sendNotificationEmail(notification) {
-    if (!notification.recipient) {
-      throw new Error("Notification recipient is required");
-    }
+// Domyślny szablon HTML gdy nie ma dedykowanego szablonu
+const generateDefaultTemplate = (subject, data) => {
+  const currentYear = new Date().getFullYear();
 
-    // Pobierz użytkownika żeby mieć jego email
-    const User = require("../models/User");
-    const recipient = await User.findById(notification.recipient);
-
-    if (!recipient) {
-      throw new Error("Recipient not found");
-    }
-
-    const subject = `[Placówka Fizjoterapeutyczna] ${notification.title}`;
-    const text = notification.message;
-
-    // Prosta wersja HTML emaila
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: Arial, sans-serif; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #007bff; color: white; padding: 20px; text-align: center; }
-          .content { padding: 20px; }
-          .footer { background: #f8f9fa; padding: 10px; text-align: center; font-size: 12px; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h2>Placówka Fizjoterapeutyczna</h2>
-          </div>
-          <div class="content">
-            <h3>${notification.title}</h3>
-            <p>${notification.message}</p>
+  return `
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${subject}</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header { 
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white; 
+            padding: 30px; 
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 300;
+        }
+        .content { 
+            padding: 30px;
+        }
+        .button { 
+            display: inline-block; 
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white; 
+            padding: 15px 30px; 
+            text-decoration: none; 
+            border-radius: 25px; 
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .footer { 
+            background-color: #f8f9fa;
+            text-align: center; 
+            font-size: 14px; 
+            color: #666; 
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>🏥 FizjoCare</h1>
+            <p>${subject}</p>
+        </div>
+        <div class="content">
             ${
-              notification.metadata?.appointmentId
-                ? "<p><small>To powiadomienie dotyczy Twojej wizyty w placówce.</small></p>"
+              data?.customMessage ||
+              data?.message ||
+              "Wiadomość z systemu FizjoCare"
+            }
+            ${
+              data?.resetUrl
+                ? `<p style="text-align: center;"><a href="${data.resetUrl}" class="button">Ustaw hasło</a></p>`
                 : ""
             }
-          </div>
-          <div class="footer">
-            <p>To jest automatyczne powiadomienie. Prosimy nie odpowiadać na ten email.</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-
-    return await this.sendEmail(recipient.email, subject, text, html);
-  }
-
-  async sendWelcomeEmail(user, temporaryPassword = null) {
-    const subject = "Witamy w systemie placówki fizjoterapeutycznej";
-
-    const text = `
-      Witaj ${user.firstName}!
-
-      Twoje konto zostało utworzone w systemie placówki fizjoterapeutycznej.
-
-      Email: ${user.email}
-      ${temporaryPassword ? `Hasło tymczasowe: ${temporaryPassword}` : ""}
-
-      ${
-        temporaryPassword
-          ? "Prosimy zmienić hasło przy pierwszym logowaniu."
-          : ""
-      }
-
-      Pozdrawiamy,
-      Zespół Placówki Fizjoterapeutycznej
-    `;
-
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: Arial, sans-serif; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #007bff; color: white; padding: 20px; text-align: center; }
-          .content { padding: 20px; }
-          .credentials { background: #f8f9fa; padding: 15px; margin: 15px 0; border-left: 4px solid #007bff; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h2>Witamy w systemie!</h2>
-          </div>
-          <div class="content">
-            <p>Witaj <strong>${user.firstName}</strong>!</p>
-            <p>Twoje konto zostało utworzone w systemie placówki fizjoterapeutycznej.</p>
-
-            <div class="credentials">
-              <p><strong>Dane logowania:</strong></p>
-              <p>Email: <strong>${user.email}</strong></p>
-              ${
-                temporaryPassword
-                  ? `<p>Hasło tymczasowe: <strong>${temporaryPassword}</strong></p>`
-                  : ""
-              }
-            </div>
-
             ${
-              temporaryPassword
-                ? "<p><em>Prosimy zmienić hasło przy pierwszym logowaniu ze względów bezpieczeństwa.</em></p>"
+              data?.expiresAt
+                ? `<p><small><strong>Link wygasa:</strong> ${data.expiresAt}</small></p>`
                 : ""
             }
-
-            <p>Pozdrawiamy,<br>Zespół Placówki Fizjoterapeutycznej</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-
-    return await this.sendEmail(user.email, subject, text, html);
-  }
-
-  async sendPasswordResetEmail(user, resetLink) {
-    const subject = "Reset hasła - Placówka Fizjoterapeutyczna";
-
-    const text = `
-      Witaj ${user.firstName}!
-
-      Otrzymaliśmy żądanie zresetowania hasła do Twojego konta.
-
-      Aby zresetować hasło, kliknij w poniższy link:
-      ${resetLink}
-
-      Link jest ważny przez 1 godzinę.
-
-      Jeśli nie prosiłeś o reset hasła, zignoruj tę wiadomość.
-
-      Pozdrawiamy,
-      Zespół Placówki Fizjoterapeutycznej
-    `;
-
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: Arial, sans-serif; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #dc3545; color: white; padding: 20px; text-align: center; }
-          .content { padding: 20px; }
-          .button { background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
-          .warning { background: #fff3cd; padding: 15px; margin: 15px 0; border-left: 4px solid #ffc107; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h2>Reset hasła</h2>
-          </div>
-          <div class="content">
-            <p>Witaj <strong>${user.firstName}</strong>!</p>
-            <p>Otrzymaliśmy żądanie zresetowania hasła do Twojego konta.</p>
-
-            <p style="text-align: center; margin: 30px 0;">
-              <a href="${resetLink}" class="button">Zresetuj hasło</a>
+            
+            ${
+              data?.resetUrl
+                ? `
+            <p>Jeśli nie możesz kliknąć w przycisk, skopiuj i wklej ten link do przeglądarki:</p>
+            <p style="word-break: break-all; background-color: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 14px;">
+                ${data.resetUrl}
             </p>
-
-            <div class="warning">
-              <p><strong>Uwaga:</strong></p>
-              <ul>
-                <li>Link jest ważny przez 1 godzinę</li>
-                <li>Jeśli nie prosiłeś o reset hasła, zignoruj tę wiadomość</li>
-                <li>Nigdy nie udostępniaj tego linku innym osobom</li>
-              </ul>
-            </div>
-
-            <p>Pozdrawiamy,<br>Zespół Placówki Fizjoterapeutycznej</p>
-          </div>
+            `
+                : ""
+            }
         </div>
-      </body>
-      </html>
-    `;
-
-    return await this.sendEmail(user.email, subject, text, html);
-  }
-
-  async sendAppointmentConfirmation(appointment) {
-    const User = require("../models/User");
-
-    // Pobierz użytkownika na podstawie pacjenta
-    const patient = await appointment.populate("patient");
-
-    if (!patient.personalInfo.contact.email) {
-      throw new Error("Patient email not found");
-    }
-
-    const subject = "Potwierdzenie wizyty - Placówka Fizjoterapeutyczna";
-
-    const appointmentDate =
-      appointment.scheduledDateTime.toLocaleDateString("pl-PL");
-    const appointmentTime = appointment.scheduledDateTime.toLocaleTimeString(
-      "pl-PL",
-      {
-        hour: "2-digit",
-        minute: "2-digit",
-      }
-    );
-
-    const text = `
-      Witaj ${patient.personalInfo.firstName}!
-
-      Potwierdzamy Twoją wizytę:
-
-      Data: ${appointmentDate}
-      Godzina: ${appointmentTime}
-      Czas trwania: ${appointment.duration} minut
-      ${appointment.room ? `Gabinet: ${appointment.room}` : ""}
-
-      Prosimy przybyć punktualnie.
-
-      Pozdrawiamy,
-      Zespół Placówki Fizjoterapeutycznej
-    `;
-
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: Arial, sans-serif; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #28a745; color: white; padding: 20px; text-align: center; }
-          .content { padding: 20px; }
-          .appointment-details { background: #f8f9fa; padding: 15px; margin: 15px 0; border-left: 4px solid #28a745; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h2>Potwierdzenie wizyty</h2>
-          </div>
-          <div class="content">
-            <p>Witaj <strong>${patient.personalInfo.firstName}</strong>!</p>
-            <p>Potwierdzamy Twoją wizytę:</p>
-
-            <div class="appointment-details">
-              <p><strong>Szczegóły wizyty:</strong></p>
-              <p>📅 Data: <strong>${appointmentDate}</strong></p>
-              <p>🕐 Godzina: <strong>${appointmentTime}</strong></p>
-              <p>⏱️ Czas trwania: <strong>${
-                appointment.duration
-              } minut</strong></p>
-              ${
-                appointment.room
-                  ? `<p>🏥 Gabinet: <strong>${appointment.room}</strong></p>`
-                  : ""
-              }
-            </div>
-
-            <p><em>Prosimy przybyć punktualnie.</em></p>
-
-            <p>Pozdrawiamy,<br>Zespół Placówki Fizjoterapeutycznej</p>
-          </div>
+        <div class="footer">
+            <p><strong>© ${currentYear} FizjoCare</strong></p>
+            <p>Wszystkie prawa zastrzeżone.</p>
+            ${
+              data?.supportEmail
+                ? `<p>Potrzebujesz pomocy? <a href="mailto:${data.supportEmail}">${data.supportEmail}</a></p>`
+                : ""
+            }
+            <p style="font-size: 12px; color: #999; margin-top: 15px;">
+                Jeśli nie spodziewałeś się tego emaila, zignoruj tę wiadomość.
+            </p>
         </div>
-      </body>
-      </html>
-    `;
+    </div>
+</body>
+</html>`;
+};
 
-    return await this.sendEmail(
-      patient.personalInfo.contact.email,
-      subject,
-      text,
-      html
-    );
-  }
-}
-
-module.exports = new EmailService();
+module.exports = {
+  sendEmail,
+  loadEmailTemplate,
+  replaceTemplateVariables,
+};

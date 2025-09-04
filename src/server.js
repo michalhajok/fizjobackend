@@ -7,16 +7,13 @@ const compression = require("compression");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const hpp = require("hpp");
-const YAML = require("yamljs");
-
-const swaggerUi = require("swagger-ui-express");
 
 const {
   securityHeaders,
   limiter,
 } = require("./middleware/security.middleware");
-const SocketHandler = require("./websocket/socket.handler");
-const NotificationService = require("./services/notification.service");
+// const SocketHandler = require("./websocket/socket.handler");
+// const NotificationService = require("./services/notification.service");
 const logger = require("./utils/logger");
 const { connectDB } = require("./config/database");
 
@@ -24,10 +21,10 @@ const { connectDB } = require("./config/database");
 const authRoutes = require("./routes/auth.routes");
 const patientRoutes = require("./routes/patient.routes");
 const employeeRoutes = require("./routes/employee.routes");
-const visitRoutes = require("./routes/visit.routes");
+// const visitRoutes = require("./routes/visit.routes");
 const appointmentRoutes = require("./routes/appointment.routes");
-const scheduleRoutes = require("./routes/schedule.routes");
-const notificationRoutes = require("./routes/notification.routes");
+// const scheduleRoutes = require("./routes/schedule.routes");
+// const notificationRoutes = require("./routes/notification.routes");
 const reportRoutes = require("./routes/report.routes");
 const adminRoutes = require("./routes/admin.routes");
 const servicesRoutes = require("./routes/services.routes");
@@ -36,19 +33,16 @@ const icdRoutes = require("./routes/icd9.routes");
 const app = express();
 const server = http.createServer(app);
 
-const swaggerDocument = YAML.load("./openapi.yaml");
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
 // Inicjalizacja WebSocket
-const socketHandler = new SocketHandler(server);
-const notificationService = new NotificationService(socketHandler);
+// const socketHandler = new SocketHandler(server);
+// const notificationService = new NotificationService(socketHandler);
 
 // Udostępnienie serwisów w req
-app.use((req, res, next) => {
-  req.socketHandler = socketHandler;
-  req.notificationService = notificationService;
-  next();
-});
+// app.use((req, res, next) => {
+//   req.socketHandler = socketHandler;
+//   req.notificationService = notificationService;
+//   next();
+// });
 
 // Trust proxy - important for production
 app.set("trust proxy", 1);
@@ -119,7 +113,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check endpoint
+// Health check endpoisnt
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
@@ -134,10 +128,10 @@ app.get("/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/api/employees", employeeRoutes);
-app.use("/api/visits", visitRoutes);
+// app.use("/api/visits", visitRoutes);
 app.use("/api/appointments", appointmentRoutes);
-app.use("/api/schedules", scheduleRoutes);
-app.use("/api/notifications", notificationRoutes);
+// app.use("/api/schedules", scheduleRoutes);
+// app.use("/api/notifications", notificationRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/services", servicesRoutes);
@@ -234,7 +228,7 @@ const startServer = async () => {
       logger.info(
         `Server running on port ${PORT} in ${process.env.NODE_ENV} mode`
       );
-      logger.info(`API documentation: http://localhost:${PORT}/api/docs`);
+      // logger.info(`API documentation: http://localhost:${PORT}/api/docs`);
     });
   } catch (error) {
     logger.error("Failed to start server:", error);

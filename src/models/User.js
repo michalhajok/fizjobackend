@@ -106,6 +106,35 @@ const userSchema = new mongoose.Schema(
     lastLogin: {
       type: Date,
     },
+    resetPasswordToken: {
+      type: String,
+      index: true, // Index dla szybkiego wyszukiwania po tokenie
+    },
+    resetPasswordExpires: {
+      type: Date,
+      index: true, // Index dla automatycznego usuwania przeterminowanych tokenów
+    },
+
+    // Dodatkowe pola dla zarządzania hasłami
+    isFirstLogin: {
+      type: Boolean,
+      default: true, // Oznacza czy użytkownik jeszcze nie ustawił hasła
+    },
+    passwordChangedAt: {
+      type: Date,
+    },
+    lastPasswordReset: {
+      type: Date,
+    },
+
+    // Statystyki bezpieczeństwa
+    failedLoginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    accountLockedUntil: {
+      type: Date,
+    },
 
     // Bezpieczeństwo
     refreshTokens: [
@@ -202,6 +231,59 @@ userSchema.methods.hasPermission = function (permission) {
     this.permissions.includes(permission) ||
     this.permissions.includes("admin:all")
   );
+};
+
+userSchema.index({
+  resetPasswordToken: 1,
+  resetPasswordExpires: 1,
+});
+
+// Middleware do automatycznego usuwania przeterminowanych tokenów
+userSchema.pre("save", function (next) {
+  // Jeśli token resetowania wygasł, usuń go
+  if (this.resetPasswordExpires && this.resetPasswordExpires <= new Date()) {
+    this.resetPasswordToken = undefined;
+    this.resetPasswordExpires = undefined;
+  }
+  next();
+});
+
+// Metoda sprawdzająca czy konto jest zablokowane
+userSchema.methods.isAccountLocked = function () {
+  return !!(this.accountLockedUntil && this.accountLockedUntil > Date.now());
+};
+
+// Metoda zwiększająca licznik nieudanych logowań
+userSchema.methods.incrementFailedAttempts = function () {
+  // Jeśli jest to pierwsze nieudane logowanie lub poprzednia blokada już wygasła
+  if (this.failedLoginAttempts === 0 || this.accountLockedUntil < Date.now()) {
+    return this.updateOne({
+      $inc: { failedLoginAttempts: 1 },
+      $unset: { accountLockedUntil: 1 },
+    });
+  }
+
+  const attempts = this.failedLoginAttempts + 1;
+  const updates = { $inc: { failedLoginAttempts: 1 } };
+
+  // Zablokuj konto po 5 nieudanych próbach na 30 minut
+  if (attempts >= 5) {
+    updates.$set = {
+      accountLockedUntil: Date.now() + 30 * 60 * 1000, // 30 minut
+    };
+  }
+
+  return this.updateOne(updates);
+};
+
+// Metoda resetująca licznik nieudanych logowań
+userSchema.methods.resetFailedAttempts = function () {
+  return this.updateOne({
+    $unset: {
+      failedLoginAttempts: 1,
+      accountLockedUntil: 1,
+    },
+  });
 };
 
 module.exports = mongoose.model("User", userSchema);

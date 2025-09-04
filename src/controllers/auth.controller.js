@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+// const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const { validationResult } = require("express-validator");
+// const { validationResult } = require("express-validator");
 const User = require("../models/User");
-const Role = require("../models/Role");
+// const Role = require("../models/Role");
 const AuditLog = require("../models/AuditLog");
 const {
   asyncHandler,
@@ -11,80 +11,82 @@ const {
   ValidationError,
 } = require("../utils/error-handler");
 
+const { sendEmail } = require("../services/email.service");
+
 const logger = require("../utils/logger");
 const config = require("../config/app");
 
 class AuthController {
-  // Rejestracja nowego użytkownika
-  register = asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new ValidationError("Validation error", errors.array());
-    }
+  // // Rejestracja nowego użytkownika
+  // register = asyncHandler(async (req, res) => {
+  //   const errors = validationResult(req);
+  //   if (!errors.isEmpty()) {
+  //     throw new ValidationError("Validation error", errors.array());
+  //   }
 
-    const { firstName, lastName, email, password, role } = req.body;
+  //   const { firstName, lastName, email, password, role } = req.body;
 
-    // Sprawdź, czy użytkownik już istnieje
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      throw new ValidationError("User already exists with this email");
-    }
+  //   // Sprawdź, czy użytkownik już istnieje
+  //   const userExists = await User.findOne({ email });
+  //   if (userExists) {
+  //     throw new ValidationError("User already exists with this email");
+  //   }
 
-    // Sprawdź rolę
-    const userRole = await Role.findById(role);
-    if (!userRole) {
-      throw new ValidationError("Invalid role");
-    }
+  //   // Sprawdź rolę
+  //   const userRole = await Role.findById(role);
+  //   if (!userRole) {
+  //     throw new ValidationError("Invalid role");
+  //   }
 
-    // Utwórz nowego użytkownika
-    const user = await User.create({
-      firstName,
-      lastName,
-      email,
-      password,
-      role: userRole._id,
-      permissions: [],
-    });
+  //   // Utwórz nowego użytkownika
+  //   const user = await User.create({
+  //     firstName,
+  //     lastName,
+  //     email,
+  //     password,
+  //     role: userRole._id,
+  //     permissions: [],
+  //   });
 
-    // Log operacji
-    await AuditLog.create({
-      userId: req.user ? req.user._id : user._id,
-      action: "USER_REGISTER",
-      resourceType: "User",
-      resourceId: user._id,
-      details: `User registered: ${user.email}`,
-      ipAddress: req.ip,
-      userAgent: req.get("User-Agent"),
-      severity: "medium",
-    });
+  //   // Log operacji
+  //   await AuditLog.create({
+  //     userId: req.user ? req.user._id : user._id,
+  //     action: "USER_REGISTER",
+  //     resourceType: "User",
+  //     resourceId: user._id,
+  //     details: `User registered: ${user.email}`,
+  //     ipAddress: req.ip,
+  //     userAgent: req.get("User-Agent"),
+  //     severity: "medium",
+  //   });
 
-    logger.info(`User registered: ${user.email}`, { userId: user._id });
+  //   logger.info(`User registered: ${user.email}`, { userId: user._id });
 
-    // Wygenerowanie tokenów
-    const tokens = this._generateTokens(user._id);
+  //   // Wygenerowanie tokenów
+  //   const tokens = this._generateTokens(user._id);
 
-    // Zapisz refresh token
-    // Poprzednio: user.refreshTokens.push(tokens.refreshToken)
-    user.refreshTokens.push({ token: tokens.refreshToken });
+  //   // Zapisz refresh token
+  //   // Poprzednio: user.refreshTokens.push(tokens.refreshToken)
+  //   user.refreshTokens.push({ token: tokens.refreshToken });
 
-    user.lastLogin = new Date();
-    await user.save();
+  //   user.lastLogin = new Date();
+  //   await user.save();
 
-    res.status(201).json({
-      success: true,
-      data: {
-        user: {
-          _id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          role: userRole,
-          permissions: user.permissions,
-        },
-        tokens,
-      },
-    });
-  });
+  //   res.status(201).json({
+  //     success: true,
+  //     data: {
+  //       user: {
+  //         _id: user._id,
+  //         firstName: user.firstName,
+  //         lastName: user.lastName,
+  //         email: user.email,
+  //         role: userRole,
+  //         permissions: user.permissions,
+  //       },
+  //       tokens,
+  //     },
+  //   });
+  // });
 
   // Logowanie użytkownika
   login = asyncHandler(async (req, res) => {
@@ -373,5 +375,158 @@ class AuthController {
     }
   }
 }
+
+exports.validateResetToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "Token jest wymagany",
+      });
+    }
+
+    // Znajdź użytkownika z tym tokenem
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Token jest nieprawidłowy lub wygasł",
+      });
+    }
+
+    // Log audytu
+    await AuditLog.create({
+      userId: user._id,
+      action: "VALIDATE_RESET_TOKEN",
+      resourceType: "User",
+      resourceId: user._id,
+      details: "Password reset token validated",
+      ipAddress: req.ip,
+      userAgent: req.get("User-Agent"),
+    });
+
+    res.json({
+      success: true,
+      message: "Token jest prawidłowy",
+      data: {
+        userId: user._id,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Error validating reset token:", error);
+    res.status(500).json({
+      success: false,
+      message: "Błąd serwera podczas walidacji tokenu",
+    });
+  }
+};
+
+// Reset hasła z tokenem
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    // Walidacja danych wejściowych
+    if (!token || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Token i hasło są wymagane",
+      });
+    }
+
+    // Walidacja hasła
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Hasło musi mieć co najmniej 8 znaków",
+      });
+    }
+
+    // Sprawdź złożoność hasła
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: "Hasło musi zawierać małą literę, wielką literę i cyfrę",
+      });
+    }
+
+    // Znajdź użytkownika z tym tokenem
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Token jest nieprawidłowy lub wygasł",
+      });
+    }
+
+    // Hashowanie nowego hasła
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Aktualizuj hasło i wyczyść token resetowania
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    user.isFirstLogin = false; // Oznacz że użytkownik już ustawił hasło
+    user.passwordChangedAt = new Date();
+
+    await user.save();
+
+    // Log audytu
+    await AuditLog.create({
+      userId: user._id,
+      action: "RESET_PASSWORD",
+      resourceType: "User",
+      resourceId: user._id,
+      details: "Password reset completed successfully",
+      ipAddress: req.ip,
+      userAgent: req.get("User-Agent"),
+    });
+
+    // Wyślij email potwierdzający (opcjonalnie)
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: "Hasło zostało zmienione - FizjoCare",
+        template: "password-changed",
+        data: {
+          firstName: user.firstName,
+          timestamp: new Date().toLocaleString("pl-PL"),
+          loginUrl: `${process.env.FRONTEND_URL}/signin`,
+        },
+      });
+    } catch (emailError) {
+      console.error("Error sending password confirmation email:", emailError);
+      // Nie przerywamy procesu jeśli email się nie wyśle
+    }
+
+    res.json({
+      success: true,
+      message: "Hasło zostało pomyślnie zmienione",
+      data: {
+        userId: user._id,
+        message: "Możesz się teraz zalogować nowym hasłem",
+      },
+    });
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    res.status(500).json({
+      success: false,
+      message: "Błąd serwera podczas resetowania hasła",
+    });
+  }
+};
 
 module.exports = new AuthController();

@@ -1,141 +1,12 @@
-// const Appointment = require("../models/Appointment");
-// const { startOfDay, endOfDay } = require("date-fns");
-
-// exports.createAppointment = async (req, res) => {
-//   const appointment = new Appointment({ ...req.body, createdBy: req.user._id });
-//   try {
-//     await appointment.save();
-//     res.status(201).json({ success: true, data: appointment });
-//   } catch (error) {
-//     return res.status(400).json({ success: false, message: error.message });
-//   }
-// };
-
-// exports.updateAppointment = async (req, res) => {
-//   const appointment = await Appointment.findByIdAndUpdate(
-//     req.params.id,
-//     req.body,
-//     { new: true }
-//   );
-//   if (!appointment)
-//     return res
-//       .status(404)
-//       .json({ success: false, message: "Nie znaleziono terminu" });
-//   res.json({ success: true, data: appointment });
-// };
-
-// exports.deleteAppointment = async (req, res) => {
-//   const appointment = await Appointment.findByIdAndDelete(req.params.id);
-//   if (!appointment)
-//     return res
-//       .status(404)
-//       .json({ success: false, message: "Nie znaleziono terminu" });
-//   res.json({ success: true, message: "Termin usunięty" });
-// };
-
-// exports.confirmAppointment = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const appt = await Appointment.findByIdAndUpdate(
-//       id,
-//       { status: "confirmed" },
-//       { new: true }
-//     );
-//     if (!appt) return res.status(404).json({ error: "Appointment not found" });
-//     res.json(appt);
-//   } catch (err) {
-//     res.status(500).json({ error: "Server error", message: err.message });
-//   }
-// };
-
-// exports.cancelAppointment = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { reason } = req.body;
-//     const appt = await Appointment.findByIdAndUpdate(
-//       id,
-//       { status: "cancelled", notes: reason || appt.notes },
-//       { new: true }
-//     );
-//     if (!appt) return res.status(404).json({ error: "Appointment not found" });
-//     res.json(appt);
-//   } catch (err) {
-//     res.status(500).json({ error: "Server error", message: err.message });
-//   }
-// };
-
-// exports.completeAppointment = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const appt = await Appointment.findByIdAndUpdate(
-//       id,
-//       { status: "completed" },
-//       { new: true }
-//     );
-//     if (!appt) return res.status(404).json({ error: "Appointment not found" });
-//     res.json(appt);
-//   } catch (err) {
-//     res.status(500).json({ error: "Server error", message: err.message });
-//   }
-// };
-
-// exports.getAvailableSlots = async (req, res) => {
-//   try {
-//     const { employeeId, date } = req.query;
-//     if (!employeeId || !date) {
-//       return res
-//         .status(400)
-//         .json({ error: "employeeId and date are required" });
-//     }
-//     const start = startOfDay(new Date(date));
-//     const end = endOfDay(new Date(date));
-
-//     // Pobierz wszystkie wizyty pracownika w tym dniu
-//     const taken = await Appointment.find({
-//       employee: employeeId,
-//       startTime: { $gte: start, $lte: end },
-//     }).select("startTime endTime -_id");
-
-//     const slots = [];
-//     const opening = new Date(start.setHours(8, 0, 0, 0));
-//     for (
-//       let dt = new Date(opening);
-//       dt.getHours() < 17;
-//       dt.setHours(dt.getHours() + 1)
-//     ) {
-//       const slotStart = new Date(dt);
-//       const slotEnd = new Date(dt);
-//       slotEnd.setHours(slotEnd.getHours() + 1);
-
-//       const conflict = taken.some(
-//         (t) => t.startTime < slotEnd && t.endTime > slotStart
-//       );
-//       if (!conflict) {
-//         slots.push({ startTime: slotStart, endTime: slotEnd });
-//       }
-//     }
-
-//     res.json(slots);
-//   } catch (err) {
-//     res.status(500).json({ error: "Server error", message: err.message });
-//   }
-// };
-
 // controllers/appointmentController.js
+
 const Appointment = require("../models/Appointment");
 const Employee = require("../models/Employee");
 const AuditLog = require("../models/AuditLog");
 //const NotificationService = require("../services/NotificationService");
-const {
-  startOfDay,
-  endOfDay,
-  addMinutes,
-  isBefore,
-  isAfter,
-} = require("date-fns");
 
 const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
+// const ObjectId = mongoose.Types.ObjectId;
 
 function toLocalISOString(d) {
   const offsetMs = d.getTimezoneOffset() * 60000;
@@ -145,6 +16,7 @@ function toLocalISOString(d) {
 
 exports.getAppointments = async (req, res) => {
   const appointments = await Appointment.find()
+    .sort({ scheduledDateTime: 1 })
     .populate("patient", "personalInfo")
     .populate("physiotherapist", "personalInfo")
     .populate("service", "name description");
@@ -466,19 +338,6 @@ exports.getAvailableSlots = async (req, res) => {
   }
 };
 
-// // Dodaj załącznik do wizyty (upload pliku)
-// router.post(
-//   "/:id/attachments",
-//   upload.single("file"),
-//   appointmentController.uploadAttachment
-// );
-
-// // Opcjonalnie - usuń załącznik
-// router.delete(
-//   "/:id/attachments/:attachmentId",
-//   appointmentController.deleteAttachment
-// );
-
 exports.uploadAttachment = async (req, res) => {
   try {
     const { id } = req.params;
@@ -533,13 +392,6 @@ exports.deleteAttachment = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Appointment not found" });
     }
-    // const attachment = appointment.interview.attachments.id(attachmentId);
-    // if (!attachment) {
-    //   return res
-    //     .status(404)
-    //     .json({ success: false, message: "Attachment not found" });
-    // }
-    // console.log("Deleting attachment:", attachment);
 
     appointment.interview.attachments.pull(attachmentId);
     await appointment.save();
