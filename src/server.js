@@ -29,6 +29,7 @@ const reportRoutes = require("./routes/report.routes");
 const adminRoutes = require("./routes/admin.routes");
 const servicesRoutes = require("./routes/services.routes");
 const icdRoutes = require("./routes/icd9.routes");
+const icfRoutes = require("./routes/icf.routes");
 
 const app = express();
 const server = http.createServer(app);
@@ -136,6 +137,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/services", servicesRoutes);
 app.use("/api/icd9", icdRoutes);
+app.use("/api/icf", icfRoutes);
 
 // Serve static files
 app.use(
